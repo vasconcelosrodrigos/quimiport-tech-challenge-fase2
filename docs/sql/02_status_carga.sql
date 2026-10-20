@@ -1,0 +1,15 @@
+CREATE TABLE status_carga (
+    id BIGSERIAL PRIMARY KEY,
+    descricao VARCHAR(30) NOT NULL UNIQUE
+);
+
+INSERT INTO status_carga (descricao)
+VALUES
+('REGISTRADA'),
+('EM_ANALISE'),
+('EM_INSPECAO'),
+('LIBERADA'),
+('BLOQUEADA'),
+('EM_MOVIMENTACAO'),
+('FINALIZADA'),
+('CANCELADA');

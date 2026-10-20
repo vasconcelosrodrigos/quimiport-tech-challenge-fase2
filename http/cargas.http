@@ -1,0 +1,304 @@
+### Buscar carga por código
+
+GET http://localhost:3000/cargas-quimicas/2002
+
+
+
+
+
+
+
+
+
+
+PATCH http://localhost:3000/cargas-quimicas/2002/status
+Content-Type: application/json
+
+{
+    "status_carga_id": 3
+}
+
+
+
+
+
+### Criar carga química
+
+POST http://localhost:3000/cargas-quimicas
+Content-Type: application/json
+
+{
+    "codigo_carga": 2001,
+    "produto_quimico_id": 2,
+    "responsavel_tecnico_id": 1,
+    "pais_origem_id": 30,
+    "pais_destino_id": 55,
+    "quantidade": 500,
+    "unidade_medida": "KG",
+    "status_documentacao_id": 1,
+    "data_entrada": "2026-10-20"
+}
+
+
+
+
+#### criando nova carga
+POST http://localhost:3000/cargas-quimicas
+Content-Type: application/json
+
+{
+    "codigo_carga": 2002,
+    "produto_quimico_id": 2,
+    "responsavel_tecnico_id": 2,
+    "pais_origem_id": 30,
+    "pais_destino_id": 40,
+    "quantidade": 300,
+    "unidade_medida": "KG",
+    "status_documentacao_id": 1,
+    "data_entrada": "2026-10-20"
+}
+
+
+
+
+
+### Criar carga com produto inativo
+
+POST http://localhost:3000/cargas-quimicas
+Content-Type: application/json
+
+{
+    "codigo_carga": 3001,
+    "produto_quimico_id": 1,
+    "responsavel_tecnico_id": 1,
+    "pais_origem_id": 30,
+    "pais_destino_id": 55,
+    "quantidade": 100,
+    "unidade_medida": "KG",
+    "status_documentacao_id": 1,
+    "data_entrada": "2026-10-20"
+}
+
+
+
+
+
+### Alterar status da carga
+
+PATCH http://localhost:3000/cargas-quimicas/2002/status
+Content-Type: application/json
+
+{
+    "status_carga_id": 2
+}
+
+
+
+#### teste mudança de status
+PATCH http://localhost:3000/cargas-quimicas/2002/status
+Content-Type: application/json
+
+{
+    "status_carga_id": 3
+}
+
+
+
+### Transição inválida
+
+PATCH http://localhost:3000/cargas-quimicas/2002/status
+Content-Type: application/json
+
+{
+    "status_carga_id": 7
+}
+
+
+
+### tentando liberar carga com documentação NOK
+
+PATCH http://localhost:3000/cargas-quimicas/1005/status
+Content-Type: application/json
+
+{
+    "status_carga_id": 4
+}
+
+
+
+### Listar todas as cargas químicas
+### Objetivo:
+### Retornar todas as cargas cadastradas
+### com produto, responsável, origem,
+### destino, documento e último status.
+
+GET http://localhost:3000/cargas-quimicas
+
+
+
+
+### Buscar carga pelo código
+### Objetivo:
+### Validar a consulta de uma carga específica
+### retornando produto, responsável,
+### origem, destino, documentação,
+### último status e data da movimentação.
+
+GET http://localhost:3000/cargas-quimicas/2002
+
+
+
+
+
+
+
+### TESTE 08
+### Alterar status da carga
+###
+### Objetivo:
+### Validar transição permitida
+### EM_INSPECAO → LIBERADA
+
+PATCH http://localhost:3000/cargas-quimicas/2002/status
+Content-Type: application/json
+
+{
+    "status_carga_id": 4
+}
+
+
+### Objetivo:
+### Validar a regra do Tech Challenge:
+### Uma carga não pode ser liberada sem documentação obrigatória.
+###
+### Cenário:
+### Carga 1005
+### Status da documentação = NOK
+### Tentativa de mudança para LIBERADA
+###
+### Resultado esperado:
+### HTTP 400 Bad Request
+### "Carga não pode ser liberada sem documentação válida"
+
+PATCH http://localhost:3000/cargas-quimicas/1005/status
+Content-Type: application/json
+
+{
+    "status_carga_id": 4
+}
+
+
+
+
+
+### TESTE 11A
+### REGISTRADA -> EM_ANALISE
+###
+### Objetivo:
+### Avançar a carga 1005 para EM_ANALISE.
+
+PATCH http://localhost:3000/cargas-quimicas/1005/status
+Content-Type: application/json
+
+{
+    "status_carga_id": 2
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### TESTE 11B
+### EM_ANALISE -> EM_INSPECAO
+###
+### Objetivo:
+### Colocar a carga 1005 em inspeção.
+###
+### Regra validada:
+### EM_ANALISE pode transitar para EM_INSPECAO.
+###
+### Resultado esperado:
+### HTTP 200 OK
+### "Status atualizado com sucesso"
+
+PATCH http://localhost:3000/cargas-quimicas/1005/status
+Content-Type: application/json
+
+{
+    "status_carga_id": 3
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+### TESTE 11B
+### EM_ANALISE -> EM_INSPECAO
+###
+### Objetivo:
+### Validar a segunda transição válida
+### da máquina de estados.
+###
+### Resultado esperado:
+### HTTP 200 OK
+### "Status atualizado com sucesso"
+
+PATCH http://localhost:3000/cargas-quimicas/1005/status
+Content-Type: application/json
+
+{
+    "status_carga_id": 3
+}
+
+
+
+
+
+
+
+
+
+
+
+
+### TESTE 11C
+### Liberação bloqueada por documentação inválida
+###
+### Objetivo:
+### Validar a regra do Tech Challenge:
+### Uma carga não pode ser liberada sem documentação válida.
+###
+### Cenário:
+### Carga em EM_INSPECAO
+### Documentação NOK
+###
+### Resultado esperado:
+### HTTP 400 Bad Request
+### "Carga não pode ser liberada sem documentação válida"
+
+PATCH http://localhost:3000/cargas-quimicas/1005/status
+Content-Type: application/json
+
+{
+    "status_carga_id": 4
+}
+
+
+

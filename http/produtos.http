@@ -1,0 +1,91 @@
+### Listar produtos
+GET http://localhost:3000/produtos-quimicos
+
+###
+
+### Buscar produto por ID
+GET http://localhost:3000/produtos-quimicos/11
+
+###
+
+### Buscar produto inexistente
+GET http://localhost:3000/produtos-quimicos/9999
+
+###
+
+### Criar produto
+POST http://localhost:3000/produtos-quimicos
+Content-Type: application/json
+
+{
+    "nome": "Ácido Nítrico",
+    "descricao": "Produto corrosivo",
+    "numero_onu": "2031",
+    "classe_risco_id": 9,
+    "grupo_compatibilidade_id": 1
+}
+
+
+### criar produto sem nome --> vai retornar erro
+POST http://localhost:3000/produtos-quimicos
+Content-Type: application/json
+
+{
+    "descricao": "Produto corrosivo",
+    "numero_onu": "2031",
+    "classe_risco_id": 9,
+    "grupo_compatibilidade_id": 1
+}
+
+
+
+
+### criar produto sem classe de risco -> vai retornar erro
+
+POST http://localhost:3000/produtos-quimicos
+Content-Type: application/json
+
+{
+    "nome": "Ácido Nítrico",
+    "descricao": "Produto corrosivo",
+    "numero_onu": "2031",
+    "grupo_compatibilidade_id": 1
+}
+
+
+
+
+
+
+### Inativar produto
+
+PATCH http://localhost:3000/produtos-quimicos/1/inativar
+
+
+
+
+
+
+
+
+
+### validando inativação
+GET http://localhost:3000/produtos-quimicos/1
+
+
+
+
+
+
+### Atualizar produto
+
+PUT http://localhost:3000/produtos-quimicos/1
+Content-Type: application/json
+
+{
+    "nome": "Acetona Atualizada",
+    "descricao": "Descrição alterada",
+    "numero_onu": "1090",
+    "classe_risco_id": 3,
+    "grupo_compatibilidade_id": 1
+}

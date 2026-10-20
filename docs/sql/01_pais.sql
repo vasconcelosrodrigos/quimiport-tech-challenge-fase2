@@ -1,0 +1,5 @@
+CREATE TABLE pais (
+    id BIGSERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    sigla CHAR(2) NOT NULL UNIQUE
+);
