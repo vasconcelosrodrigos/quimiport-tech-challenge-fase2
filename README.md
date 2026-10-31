@@ -164,18 +164,7 @@ BLOQUEADA → CANCELADA
 
 docker compose up -d
 
-## Restaurar Banco
 
-docker exec -i quimiport-postgres \
-psql -U postgres -d quimiport < database/backup/quimiport_v1.sql
-
-## Instalar Dependências
-
-npm install
-
-## Executar API
-
-npm run dev
 
 
 
