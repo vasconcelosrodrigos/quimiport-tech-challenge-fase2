@@ -26,3 +26,5 @@ networks:
 
 volumes:
   pgdata:
+    external: true
+    name: dev-quimi_pgdata
