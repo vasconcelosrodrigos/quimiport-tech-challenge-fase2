@@ -159,24 +159,25 @@ BLOQUEADA → CANCELADA
 - Figura 22 – Produto INATIVO persistido no banco
 - Figura 23 – Liberação bloqueada por documentação NOK
 
-## Status Atual
 
-### Concluído
+## Subir PostgreSQL
 
-- CRUD completo de Produtos Químicos
-- CRUD básico de Cargas Químicas
-- PostgreSQL integrado à API
-- Histórico automático
-- Máquina de estados
-- Validações obrigatórias do domínio
+docker compose up -d
 
-### Próximos Passos
+## Restaurar Banco
 
-- Swagger/OpenAPI
-- Testes automatizados
-- GitHub Actions
-- Inclusão das imagens na documentação
-- Vídeo demonstrativo
+docker exec -i quimiport-postgres \
+psql -U postgres -d quimiport < database/backup/quimiport_v1.sql
+
+## Instalar Dependências
+
+npm install
+
+## Executar API
+
+npm run dev
+
+
 
 ## Autor
 
@@ -185,3 +186,4 @@ Rodrigo Sampaio Vasconcelos
 Pós Tech - Full Stack Development
 
 Tech Challenge - Fase 2
+
