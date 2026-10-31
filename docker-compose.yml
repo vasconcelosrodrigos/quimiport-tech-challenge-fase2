@@ -1,0 +1,28 @@
+
+services:
+  pg-docker:
+    image: postgres:17-alpine
+    container_name: quimiport-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: quimiport
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+    networks:
+      - dev-network
+
+
+networks:
+  dev-network:
+    driver: bridge
+
+volumes:
+  pgdata:
