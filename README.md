@@ -1,178 +1,110 @@
-# QuimiPort - Tech Challenge Fase 2
+# QuimiPort - Sistema de Gestão de Cargas Químicas Portuárias
 
-Sistema para gerenciamento de cargas químicas em ambiente portuário desenvolvido para o Tech Challenge da Pós Tech - Full Stack Development.
+O **QuimiPort** é uma solução Full Stack desenvolvida para centralizar, monitorar e controlar todo o fluxo operacional relacionado ao gerenciamento de cargas químicas em ambiente portuário, inspirado nas operações logísticas do Porto de Santos. 
 
-## Sobre o Projeto
+Esta é a primeira versão da API backend, entregue como o projeto **Tech Challenge 2 (TC2)** da pós-graduação **Pós Tech (FIAP)**. A aplicação automatiza validações críticas de segurança, controle documental e classificação de risco antes de qualquer movimentação física de substâncias químicas.
 
-O QuimiPort controla o ciclo de vida de cargas químicas, garantindo rastreabilidade, integridade operacional e conformidade com regras de negócio relacionadas ao transporte e movimentação de produtos químicos.
+## 🚀 Tecnologias Utilizadas
 
-## Tecnologias Utilizadas
+*   **Runtime:** Node.js
+*   **Banco de Dados:** Banco de Dados Relacional (SQL)
+*   **Containerização:** Docker & Docker Compose
+*   **Versionamento:** Git & GitHub
 
-### Backend
-- Node.js
-- Express
+---
 
-### Banco de Dados
-- PostgreSQL 17
+## 📦 Estrutura e Estado Atual do Projeto
 
-### Infraestrutura
-- Docker
-- Docker Compose
-- WSL2
-
-### Ferramentas
-- VS Code
-- REST Client
-- DBeaver
-- Git
-- GitHub
-
-## Estrutura do Projeto
+O projeto encontra-se com sua arquitetura backend estruturada e ambiente de infraestrutura containerizado pronto para execução.
 
 ```text
-quimiport-tech-challenge-fase2
-│
-├── database
-├── docs
-├── http
-├── src
-├── package.json
-├── package-lock.json
-├── docker-compose.yml
-└── README.md
+quimiport-tech-challange-fase2/
+├── .env                         # Variáveis de ambiente da aplicação
+├── .gitignore                   # Arquivos ignorados pelo Git
+├── Dockerfile                   # Definição da imagem Docker da API Node.js
+├── docker-compose.yml           # Orquestração da API e do Banco de Dados
+├── package.json                 # Definição de dependências do projeto
+├── README.md                    # Documentação do projeto
+├── database/
+│   ├── connection.js            # Inicialização e pool de conexão com o banco
+│   └── init/
+│       └── quimiport_v1.sql     # Script completo unificado de DDL e carga inicial
+├── docs/
+│   └── sql/                     # Scripts isolados de tabelas e seeds (Fase 1/2)
+│       ├── 01_pais.sql
+│       ├── 02_status_carga.sql
+│       ├── ...
+│       └── 18_seed_historico_carga.sql
+├── http/                        # Arquivos de testes manuais de requisições HTTP
+│   ├── cargas.http
+│   └── produtos.http
+└── src/
+    ├── app.js                   # Configuração e middlewares do Express/Fastify
+    ├── server.js                # Inicialização do servidor HTTP
+    ├── controllers/             # Camada de controle (Carga e Produto)
+    ├── models/                  # Definição dos modelos e mapeamento de dados
+    └── routes/                  # Definição dos endpoints REST
 ```
 
-## Modelo de Dados
+---
 
-### Produto Químico
-- ID
-- Nome
-- Descrição
-- Número ONU
-- Classe de Risco
-- Grupo de Compatibilidade
-- Status
-- Data de Criação
-- Data de Atualização
+## 🗄️ Banco de Dados e Modelagem
 
-### Responsável Técnico
-- ID
-- Nome
-- Registro Profissional
+A persistência utiliza uma modelagem relacional robusta. O banco de dados é inicializado e populado automaticamente através do script unificado localizado em `database/init/quimiport_v1.sql`.
 
-### Carga Química
-- Código da Carga
-- Produto Químico
-- Responsável Técnico
-- Origem
-- Destino
-- Quantidade
-- Unidade de Medida
-- Status da Documentação
-- Status da Carga
-- Data de Entrada
+### Entidades Mapeadas:
+*   **Produtos Químicos:** Cadastro de substâncias contendo identificador, nome, descrição, número ONU, classe de risco, grupo de compatibilidade e status ativo/inativo.
+*   **Cargas Químicas:** Armazenamento de informações como código, quantidade, unidade de medida, origem, destino, responsável técnico e documentação obrigatória.
+*   **Relacionamentos:** Associação direta de chave estrangeira vinculando cada carga a um produto químico específico, além do controle histórico de movimentações.
 
-### Histórico da Carga
-- Carga
-- Status
-- Data/Hora da Movimentação
+---
 
-## Máquina de Estados
+## ⚙️ Como Executar o Projeto com Docker
 
-Fluxo principal:
+Certifique-se de ter o **Docker** e o **Docker Compose** instalados em sua máquina de desenvolvimento.
 
-```text
-REGISTRADA
-    ↓
-EM_ANALISE
-    ↓
-EM_INSPECAO
-    ↓
-LIBERADA
-    ↓
-EM_MOVIMENTACAO
-    ↓
-FINALIZADA
+### 1. Configurar as Variáveis de Ambiente
+Verifique ou ajuste as credenciais de acesso e portas configuradas no arquivo `.env` localizado na raiz do projeto.
+
+### 2. Inicializar o Ambiente Containerizado
+Na raiz do projeto (onde está o arquivo `docker-compose.yml`), execute o comando abaixo no terminal:
+
+```bash
+docker compose up --build
 ```
 
-Fluxos alternativos:
+Este comando irá:
+1. Construir a imagem Docker da API Node.js a partir do `Dockerfile`.
+2. Subir o contêiner do Banco de Dados Relacional.
+3. Executar automaticamente o script `database/init/quimiport_v1.sql` criando todas as tabelas, relacionamentos e inserindo a massa de dados inicial (seeds).
+4. Expor os serviços localmente prontos para receber conexões.
 
-```text
-REGISTRADA → CANCELADA
-EM_ANALISE → CANCELADA
-EM_INSPECAO → BLOQUEADA
-EM_INSPECAO → CANCELADA
-LIBERADA → CANCELADA
-BLOQUEADA → CANCELADA
-```
+### 3. Testar os Endpoints REST
+Com os contêineres ativos, você pode efetuar disparos manuais para validação dos fluxos utilizando os arquivos contidos na pasta `http/`:
+*   `http/produtos.http` (Cadastro, listagem e inativação de produtos)
+*   `http/cargas.http` (Registro, bloqueio, liberação e transições de status da carga)
 
-## Endpoints Implementados
+---
+
+## 🎯 Principais Endpoints Mapeados
 
 ### Produtos Químicos
-- GET /produtos-quimicos
-- GET /produtos-quimicos/:id
-- POST /produtos-quimicos
-- PUT /produtos-quimicos/:id
-- PATCH /produtos-quimicos/:id/inativar
+*   `POST /produtos-quimicos` - Criar novo produto químico
+*   `GET /produtos-quimicos` - Listar todos os produtos
+*   `GET /produtos-quimicos/:id` - Buscar detalhes de um produto por ID
+*   `PUT /produtos-quimicos/:id` - Atualizar informações do produto
+*   `PATCH /produtos-quimicos/:id/inativar` - Alterar status para inativo
 
 ### Cargas Químicas
-- GET /cargas-quimicas
-- GET /cargas-quimicas/:id
-- POST /cargas-quimicas
-- PATCH /cargas-quimicas/:id/status
+*   `POST /cargas-quimicas` - Registrar nova carga portuária
+*   `GET /cargas-quimicas` - Listar todas as cargas
+*   `GET /cargas-quimicas/:id` - Buscar carga por ID
+*   `PATCH /cargas-quimicas/:id/status` - Atualizar transição de status
+*   `PATCH /cargas-quimicas/:id/bloquear` - Bloquear carga por inconformidade
+*   `PATCH /cargas-quimicas/:id/liberar` - Liberar carga mediante documentação
+*   `PATCH /cargas-quimicas/:id/cancelar` - Cancelar carga operacionalmente
 
-## Regras de Negócio Implementadas
+---
 
-- Produto químico não pode ser cadastrado sem nome.
-- Produto químico não pode ser cadastrado sem classe de risco.
-- Produto inativo não pode ser utilizado em novas cargas.
-- Toda carga deve possuir produto químico.
-- Toda carga deve possuir responsável técnico.
-- Quantidade deve ser maior que zero.
-- Histórico é criado automaticamente.
-- Transições inválidas são bloqueadas.
-- Carga não pode ser liberada sem documentação válida.
-
-## Evidências Coletadas
-
-- Figura 01 – DER do banco
-- Figura 02 – Base populada
-- Figura 03 – GET cargas
-- Figura 04 – GET produtos
-- Figura 05 – Status via histórico
-- Figura 06 – GET produto por ID
-- Figura 07 – POST produto
-- Figura 08 – Nome obrigatório
-- Figura 09 – Classe de risco obrigatória
-- Figura 10 – Inativação de produto
-- Figura 11 – Validação da inativação
-- Figura 12 – PUT produto
-- Figura 13 – GET carga por ID
-- Figura 14 – POST carga
-- Figura 15 – Histórico automático
-- Figura 16 – Produto inativo bloqueado
-- Figura 17 – PATCH status da carga
-- Figura 18 – Histórico registrando mudança
-- Figura 19 – Consulta usando histórico
-- Figura 20 – Transição válida
-- Figura 21 – Transição inválida bloqueada
-- Figura 22 – Produto INATIVO persistido no banco
-- Figura 23 – Liberação bloqueada por documentação NOK
-
-
-## Subir  API e PostgreSQL
-
-docker compose up -d
-
-
-
-
-
-## Autor
-
-Rodrigo Sampaio Vasconcelos
-
-Pós Tech - Full Stack Development
-
-Tech Challenge - Fase 2
-
+## 👥 Integrantes do Grupo
+*   **Rodrigo Sampaio Vasconcelos**
