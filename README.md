@@ -160,7 +160,7 @@ BLOQUEADA → CANCELADA
 - Figura 23 – Liberação bloqueada por documentação NOK
 
 
-## Subir PostgreSQL
+## Subir  API e PostgreSQL
 
 docker compose up -d
 
