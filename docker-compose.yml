@@ -1,4 +1,3 @@
-
 services:
   pg-docker:
     image: postgres:17-alpine
@@ -19,6 +18,22 @@ services:
     networks:
       - dev-network
 
+  api:
+    build: .
+    container_name: quimiport-api
+    restart: unless-stopped
+
+    ports:
+      - "3000:3000"
+
+    env_file:
+      - .env
+
+    depends_on:
+      - pg-docker
+
+    networks:
+      - dev-network
 
 networks:
   dev-network:
