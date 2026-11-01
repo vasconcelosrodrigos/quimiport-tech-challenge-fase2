@@ -87,12 +87,10 @@ erDiagram
         INT id PK
         VARCHAR nome
         VARCHAR registro_profissional
-        VARCHAR telefone
     }
     PRODUTO_QUIMICO {
         INT id PK
         VARCHAR nome
-        TEXT descricao
         VARCHAR numero_onu
         INT classe_risco_id FK
         INT grupo_compatibilidade_id FK
@@ -118,7 +116,9 @@ erDiagram
     HISTORICO_CARGA {
         INT id PK
         INT carga_quimica_id FK
-        INT status_carga_id FK
+        INT status_anterior_id FK
+        INT status_atual_id FK
+        VARCHAR alterado_por
         TIMESTAMP data_mudanca
         TEXT observacao
     }
@@ -134,14 +134,15 @@ erDiagram
     CARGA_QUIMICA }o--|| PAIS : "origem"
     CARGA_QUIMICA }o--|| PAIS : "destino"
 
-    HISTORICO_CARGA }o--|| CARGA_QUIMICA : "registra_linha_do_tempo"
-    HISTORICO_CARGA }o--|| STATUS_CARGA : "guarda_estado"
+    HISTORICO_CARGA }o--|| CARGA_QUIMICA : "vinculado_a"
+    HISTORICO_CARGA }o--|| STATUS_CARGA : "anterior"
+    HISTORICO_CARGA }o--|| STATUS_CARGA : "atual"
 ```
 
-### Detalhes das Entidades Principais:
-*   **Produtos Químicos:** Cadastro de substâncias contendo metadados de risco fundamentais (Número ONU, Classe de Risco e Compatibilidade). Possui validação lógica de status ativo/inativo para novos registros de entrada.
-*   **Cargas Químicas:** Entidade central da cadeia de suprimentos. Vincula a movimentação portuária à origem, ao destino, à documentação legal, à auditoria do técnico responsável e ao estado da esteira logística.
-*   **Histórico da Carga:** Tabela de trilha de auditoria (event sourcing parcial), alimentando a máquina de estados sempre que houver mudanças de status.
+### Detalhes das Entidades Principais e Regras:
+*   **Produtos Químicos:** Cadastro simplificado focado em metadados de risco fundamentais (Número ONU, Classe de Risco e Compatibilidade). Possui validação lógica de status ativo/inativo para novos registros de entrada.
+*   **Cargas Químicas:** Vincula a movimentação portuária à origem, ao destino, à documentação legal, à auditoria do técnico responsável e ao estado da esteira logística.
+*   **Histórico da Carga (Auditoria):** Tabela crítica integrada à máquina de estados. Monitora o ciclo de vida da carga persistindo quem alterou, quando alterou, o status de origem e o novo status assumido no fluxo.
 
 ---
 
@@ -153,10 +154,12 @@ Certifique-se de ter o **Docker** e o **Docker Compose** instalados em sua máqu
 Verifique ou ajuste as credenciais de acesso e portas configuradas no arquivo `.env` localizado na raiz do projeto.
 
 ### 2. Inicializar o Ambiente Containerizado
-Na raiz do projeto (onde está o arquivo `docker-compose.yml`), execute o comando abaixo no terminal:
+Na raiz do projeto (onde está o arquivo `docker-compose.yml`), execute os comandos abaixo no terminal:
 
 ```bash
 docker compose down -v
+```
+```bash
 docker compose up -d
 ```
 
@@ -168,8 +171,8 @@ Este comando irá:
 
 ### 3. Testar os Endpoints REST
 Com os contêineres ativos, você pode efetuar disparos manuais para validação dos fluxos utilizando os arquivos contidos na pasta `http/`:
-*   `http/produtos.http` (Cadastro, listagem e inativação de produtos)
-*   `http/cargas.http` (Registro, bloqueio, liberação e transições de status da carga)
+*   `http/produtos.http`
+*   `http/cargas.http`
 
 ---
 
