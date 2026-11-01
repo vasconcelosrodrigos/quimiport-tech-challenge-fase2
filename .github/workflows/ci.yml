@@ -59,7 +59,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
-          psql -h localhost -U postgres -d quimiport < database/backup/quimiport_v1.sql
+          psql -h localhost -U postgres -d quimiport < database/init/quimiport_v1.sql
         env:
           PGPASSWORD: postgres
 
