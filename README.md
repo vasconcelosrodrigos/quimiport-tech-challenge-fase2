@@ -159,6 +159,11 @@ Na raiz do projeto (onde está o arquivo `docker-compose.yml`), execute os coman
 ```bash
 docker compose down -v
 ```
+
+```bash
+docker compose build --no-cache
+```
+
 ```bash
 docker compose up -d
 ```
