@@ -15,6 +15,33 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+
+      postgres:
+        image: postgres:17-alpine
+
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: quimiport
+
+        ports:
+          - 5432:5432
+
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      PORT: 3000
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: quimiport
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+
     steps:
 
       - name: Checkout
@@ -27,6 +54,14 @@ jobs:
 
       - name: Instalar dependências
         run: npm install
+
+      - name: Restaurar banco
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          psql -h localhost -U postgres -d quimiport < database/backup/quimiport_v1.sql
+        env:
+          PGPASSWORD: postgres
 
       - name: Executar testes
         run: npm test
