@@ -52,10 +52,96 @@ quimiport-tech-challange-fase2/
 
 A persistência utiliza uma modelagem relacional robusta. O banco de dados é inicializado e populado automaticamente através do script unificado localizado em `database/init/quimiport_v1.sql`.
 
-### Entidades Mapeadas:
-*   **Produtos Químicos:** Cadastro de substâncias contendo identificador, nome, descrição, número ONU, classe de risco, grupo de compatibilidade e status ativo/inativo.
-*   **Cargas Químicas:** Armazenamento de informações como código, quantidade, unidade de medida, origem, destino, responsável técnico e documentação obrigatória.
-*   **Relacionamentos:** Associação direta de chave estrangeira vinculando cada carga a um produto químico específico, além do controle histórico de movimentações.
+### Diagrama de Entidade e Relacionamento (ERD)
+
+```mermaid
+erDiagram
+    PAIS {
+        INT id PK
+        VARCHAR nome
+        VARCHAR codigo_iso
+    }
+    STATUS_PRODUTO {
+        INT id PK
+        VARCHAR descricao
+    }
+    CLASSE_RISCO {
+        INT id PK
+        VARCHAR codigo
+        VARCHAR descricao
+    }
+    GRUPO_COMPATIBILIDADE {
+        INT id PK
+        VARCHAR codigo
+        VARCHAR descricao
+    }
+    STATUS_DOCUMENTACAO {
+        INT id PK
+        VARCHAR descricao
+    }
+    STATUS_CARGA {
+        INT id PK
+        VARCHAR descricao
+    }
+    RESPONSAVEL_TECNICO {
+        INT id PK
+        VARCHAR nome
+        VARCHAR registro_profissional
+        VARCHAR telefone
+    }
+    PRODUTO_QUIMICO {
+        INT id PK
+        VARCHAR nome
+        TEXT descricao
+        VARCHAR numero_onu
+        INT classe_risco_id FK
+        INT grupo_compatibilidade_id FK
+        INT status_produto_id FK
+        TIMESTAMP data_criacao
+        TIMESTAMP data_atualizacao
+    }
+    CARGA_QUIMICA {
+        INT id PK
+        VARCHAR codigo_carga
+        INT produto_quimico_id FK
+        DECIMAL quantidade
+        VARCHAR unidade_medida
+        INT origem_pais_id FK
+        INT destino_pais_id FK
+        INT responsavel_tecnico_id FK
+        INT status_documentacao_id FK
+        INT status_carga_id FK
+        TIMESTAMP data_entrada
+        TIMESTAMP data_criacao
+        TIMESTAMP data_atualizacao
+    }
+    HISTORICO_CARGA {
+        INT id PK
+        INT carga_quimica_id FK
+        INT status_carga_id FK
+        TIMESTAMP data_mudanca
+        TEXT observacao
+    }
+
+    PRODUTO_QUIMICO }o--|| CLASSE_RISCO : "possui"
+    PRODUTO_QUIMICO }o--|| GRUPO_COMPATIBILIDADE : "pertence"
+    PRODUTO_QUIMICO }o--|| STATUS_PRODUTO : "estado"
+
+    CARGA_QUIMICA }o--|| PRODUTO_QUIMICO : "contem"
+    CARGA_QUIMICA }o--|| RESPONSAVEL_TECNICO : "validada_por"
+    CARGA_QUIMICA }o--|| STATUS_DOCUMENTACAO : "validacao"
+    CARGA_QUIMICA }o--|| STATUS_CARGA : "estado_atual"
+    CARGA_QUIMICA }o--|| PAIS : "origem"
+    CARGA_QUIMICA }o--|| PAIS : "destino"
+
+    HISTORICO_CARGA }o--|| CARGA_QUIMICA : "registra_linha_do_tempo"
+    HISTORICO_CARGA }o--|| STATUS_CARGA : "guarda_estado"
+```
+
+### Detalhes das Entidades Principais:
+*   **Produtos Químicos:** Cadastro de substâncias contendo metadados de risco fundamentais (Número ONU, Classe de Risco e Compatibilidade). Possui validação lógica de status ativo/inativo para novos registros de entrada.
+*   **Cargas Químicas:** Entidade central da cadeia de suprimentos. Vincula a movimentação portuária à origem, ao destino, à documentação legal, à auditoria do técnico responsável e ao estado da esteira logística.
+*   **Histórico da Carga:** Tabela de trilha de auditoria (event sourcing parcial), alimentando a máquina de estados sempre que houver mudanças de status.
 
 ---
 
