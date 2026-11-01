@@ -6,8 +6,8 @@ Esta é a primeira versão da API backend, entregue como o projeto **Tech Challe
 
 ## 🚀 Tecnologias Utilizadas
 
-*   **Runtime:** Node.js
-*   **Banco de Dados:** Banco de Dados Relacional (SQL)
+*   **Runtime:** Node.js e Express
+*   **Banco de Dados:** Banco de Dados Relacional (SQL) Postgres
 *   **Containerização:** Docker & Docker Compose
 *   **Versionamento:** Git & GitHub
 
