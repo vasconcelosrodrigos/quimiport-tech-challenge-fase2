@@ -7,7 +7,7 @@ Esta é a primeira versão da API backend, entregue como o projeto **Tech Challe
 ## 🚀 Tecnologias Utilizadas
 
 *   **Runtime:** Node.js e Express
-*   **Banco de Dados:** Banco de Dados Relacional (SQL) Postgres
+*   **Banco de Dados:** Banco de Dados Relacional PostgreSQL
 *   **Containerização:** Docker & Docker Compose
 *   **Versionamento:** Git & GitHub
 
@@ -39,8 +39,10 @@ quimiport-tech-challange-fase2/
 │   ├── cargas.http
 │   └── produtos.http
 └── src/
-    ├── app.js                   # Configuração e middlewares do Express/Fastify
+    ├── app.js                   # Configuração e middlewares do Express
     ├── server.js                # Inicialização do servidor HTTP
+    ├── config/
+    │   └── swagger.js           # Configuração e especificação do Swagger UI
     ├── controllers/             # Camada de controle (Carga e Produto)
     ├── models/                  # Definição dos modelos e mapeamento de dados
     └── routes/                  # Definição dos endpoints REST
@@ -170,34 +172,34 @@ docker compose up -d
 
 Este comando irá:
 1. Construir a imagem Docker da API Node.js a partir do `Dockerfile`.
-2. Subir o contêiner do Banco de Dados Relacional.
+2. Subir o contêiner do Banco de Dados Relacional PostgreSQL.
 3. Executar automaticamente o script `database/init/quimiport_v1.sql` criando todas as tabelas, relacionamentos e inserindo a massa de dados inicial (seeds).
 4. Expor os serviços localmente prontos para receber conexões.
 
-### 3. Testar os Endpoints REST
-Com os contêineres ativos, você pode efetuar disparos manuais para validação dos fluxos utilizando os arquivos contidos na pasta `http/`:
-*   `http/produtos.http`
-*   `http/cargas.http`
+---
+
+## 🧪 Executando os Testes Automatizados (Jest)
+
+A suíte de testes valida as regras de negócio críticas e a segurança da máquina de estados de forma isolada e performática. Para executar a cobertura de testes dentro do contêiner da aplicação, utilize o comando abaixo:
+
+```bash
+docker compose exec api npm test
+```
 
 ---
 
-## 🎯 Principais Endpoints Mapeados
+## 📖 Documentação da API (Swagger)
 
-### Produtos Químicos
-*   `POST /produtos-quimicos` - Criar novo produto químico
-*   `GET /produtos-quimicos` - Listar todos os produtos
-*   `GET /produtos-quimicos/:id` - Buscar detalhes de um produto por ID
-*   `PUT /produtos-quimicos/:id` - Atualizar informações do produto
-*   `PATCH /produtos-quimicos/:id/inativar` - Alterar status para inativo
+Com a aplicação rodando localmente através do Docker, a documentação viva e interativa dos endpoints contendo payloads de exemplo e testes de requisição pode ser acessada pelo link:
 
-### Cargas Químicas
-*   `POST /cargas-quimicas` - Registrar nova carga portuária
-*   `GET /cargas-quimicas` - Listar todas as cargas
-*   `GET /cargas-quimicas/:id` - Buscar carga por ID
-*   `PATCH /cargas-quimicas/:id/status` - Atualizar transição de status
-*   `PATCH /cargas-quimicas/:id/bloquear` - Bloquear carga por inconformidade
-*   `PATCH /cargas-quimicas/:id/liberar` - Liberar carga mediante documentação
-*   `PATCH /cargas-quimicas/:id/cancelar` - Cancelar carga operacionalmente
+👉 [http://localhost:3000/api-docs/](http://localhost:3000/api-docs/)
+
+### Principais Endpoints Mapeados:
+*   `POST /produtos-quimicos` - Cadastra um novo produto químico
+*   `GET /produtos-quimicos` - Lista todos os produtos cadastrados
+*   `PATCH /produtos-quimicos/:id/inativar` - Altera logicamente o status do produto para inativo
+*   `POST /cargas-quimicas` - Registra uma nova carga portuária
+*   `PATCH /cargas-quimicas/:id/status` - Atualiza a transição de status da carga validando regras de segurança portuária
 
 ---
 
