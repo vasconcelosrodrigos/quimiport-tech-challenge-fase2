@@ -156,7 +156,8 @@ Verifique ou ajuste as credenciais de acesso e portas configuradas no arquivo `.
 Na raiz do projeto (onde está o arquivo `docker-compose.yml`), execute o comando abaixo no terminal:
 
 ```bash
-docker compose up --build
+docker compose down -v
+docker compose up -d
 ```
 
 Este comando irá:

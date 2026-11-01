@@ -14,7 +14,7 @@ services:
 
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./database/init:/docker-entrypoint-initdb.d
+      - ./database/init/quimiport_v1.sql:/docker-entrypoint-initdb.d/quimiport_v1.sql
 
     networks:
       - dev-network
